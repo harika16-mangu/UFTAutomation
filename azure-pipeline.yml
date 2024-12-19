@@ -1,0 +1,26 @@
+trigger:
+  branches:
+    include:
+      - main  # Trigger the pipeline on commits to the main branch
+
+pool:
+  name: 'self-hosted agent'  # Specify your self-hosted agent pool
+
+variables:
+  UFT_SCRIPT_PATH: "C:\SFAutomation\FunctionLibrary\LaunchUFT.vbs"  # Path to the VBScript file in the repo
+
+steps:
+  - checkout: self  # Pull the repository
+
+  - task: CmdLine@2
+    inputs:
+      script: |
+        echo "Executing UFT Script..."
+        cscript.exe "C:\SFAutomation\FunctionLibrary\LaunchUFT.vbs"
+    displayName: 'Run UFT Test via VBScript'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: "C:\SFAutomation\Results.xml"  # Adjust path if required
+      failTaskOnFailedTests: true
